@@ -5,7 +5,11 @@ git commit -m "first commit" # Create your first save point (commit)
 git remote add origin [YOUR_REMOTE_URL] # Link local to GitHub
 git push -u origin main                # Upload code to the main branch
 
+git branch --set-upstream-to=origin/main main
 
+git pull --rebase
+
+git push -u origin main
 
 kubectl run debug --rm -it --image=busybox -- sh
 
