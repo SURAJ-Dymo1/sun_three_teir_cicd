@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: mongodb
-        image: surajmane121045/sun_database_app:b37b240fcbc7cb440fd8da653862de1fe2e2f167
+        image: surajmane121045/sun_database_app:3d2f36570367bef596f79dd0fb991b0b10911983
         ports:
         - containerPort: 27017
 
