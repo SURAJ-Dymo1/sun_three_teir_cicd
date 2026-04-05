@@ -1599,3 +1599,246 @@ If you want next level 🚀:
 * Or show **Kubernetes best practices (liveness, readiness, resources, etc.)**
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+You’re hitting a **very important real-world issue** 👍 — by default MongoDB in a Pod is **ephemeral**, so when the Pod restarts → data is gone ❌
+
+👉 Solution = **Persistent Volume (PV) + Persistent Volume Claim (PVC)**
+
+I’ll give you a clean **step-by-step setup** for your Multipass + Kubernetes cluster 👇
+
+---
+
+# 🧠 What we’ll do
+
+```
+Mongo Pod
+   ↓
+PVC (request storage)
+   ↓
+PV (actual storage on node)
+```
+
+---
+
+# ✅ Step 1: Create Persistent Volume (PV)
+
+👉 Since you're on **Multipass (local VM)**, use `hostPath`
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data/mongodb   # directory on node
+```
+
+---
+
+# ✅ Step 2: Create Persistent Volume Claim (PVC)
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongodb-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+```
+
+---
+
+# ✅ Step 3: Update your MongoDB Deployment
+
+👉 Mount volume to MongoDB data directory:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: surajmane121045/sun_database_app:24392726b2e765e138d96bbb21e867883655927a
+        ports:
+        - containerPort: 27017
+
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: "admin"
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: "admin123"
+
+        volumeMounts:
+        - name: mongodb-storage
+          mountPath: /data/db   # 👈 Mongo default data path
+
+      volumes:
+      - name: mongodb-storage
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+```
+
+---
+
+# ✅ Step 4: Apply everything (IMPORTANT ORDER)
+
+```bash
+kubectl apply -f pv.yaml
+kubectl apply -f pvc.yaml
+kubectl apply -f mongodb-deployment.yaml
+```
+
+---
+
+# ✅ Step 5: Verify
+
+### Check PV:
+
+```bash
+kubectl get pv
+```
+
+### Check PVC:
+
+```bash
+kubectl get pvc
+```
+
+👉 Status should be:
+
+```
+Bound ✅
+```
+
+---
+
+# 🧪 Step 6: Test persistence
+
+1. Insert data into MongoDB
+2. Delete pod:
+
+```bash
+kubectl delete pod <mongodb-pod>
+```
+
+3. Pod restarts → check data
+
+👉 Data should still be there ✅
+
+---
+
+# 🔴 VERY IMPORTANT (Multipass note)
+
+Your PV uses:
+
+```yaml
+hostPath: /mnt/data/mongodb
+```
+
+👉 This directory must exist on the node
+
+Run on your VM:
+
+```bash
+sudo mkdir -p /mnt/data/mongodb
+sudo chmod -R 777 /mnt/data/mongodb
+```
+
+---
+
+# ⚠️ Common mistakes (you might hit)
+
+### ❌ Wrong mount path
+
+Must be:
+
+```yaml
+/data/db
+```
+
+---
+
+### ❌ PVC not bound
+
+Check:
+
+```bash
+kubectl describe pvc mongodb-pvc
+```
+
+---
+
+### ❌ Using multiple replicas
+
+MongoDB with `hostPath` + replicas > 1 ❌ (not safe)
+
+---
+
+# 🚀 Bonus (Best Practice - production)
+
+Instead of Deployment → use:
+
+👉 **StatefulSet** (for databases)
+
+But for your learning → Deployment is fine 👍
+
+---
+
+# 🧠 Final Summary
+
+| Problem              | Fix                          |
+| -------------------- | ---------------------------- |
+| Data lost on restart | No persistent storage        |
+| Solution             | PV + PVC                     |
+| Mount path           | `/data/db`                   |
+| Environment          | Works perfectly in Multipass |
+
+---
+
+If you want next 🚀
+I can help you:
+
+* Convert MongoDB → **StatefulSet (production-ready)**
+* Add **storage class (dynamic provisioning)**
+* Or debug if PVC shows **Pending**
+
+Just tell me 👍
