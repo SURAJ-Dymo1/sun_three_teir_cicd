@@ -25,7 +25,7 @@ var collection *mongo.Collection
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		panic("Error loading .env file")
+		// panic("Error loading .env file")
 	}
 	mongoURI := os.Getenv("MONGO_URI")
 	databaseName := os.Getenv("MONGO_DATABASE")
