@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: surajmane121045/sun_backend_app:13f98be649eeab2c506f085c96636525750e9ab9
+        image: surajmane121045/sun_backend_app:b37b240fcbc7cb440fd8da653862de1fe2e2f167
         ports:
         - containerPort: 8080
 
