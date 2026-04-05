@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: surajmane121045/sun_backend_app:latest
+        ports:
+        - containerPort: 8080
+
+        env:
+        # ConfigMap values
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: all_config
+              key: MONGO_DATABASE
+
+        - name: MONGO_COLLECTION
+          valueFrom:
+            configMapKeyRef:
+              name: all_config
+              key: MONGO_COLLECTION
+
+
+
+        # Secret values
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: all_secret
+              key: MONGO_URI
+
+        # - name: PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: backend-secret
+        #       key: APP_PASSWORD
