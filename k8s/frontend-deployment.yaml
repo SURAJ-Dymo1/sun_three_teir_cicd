@@ -23,5 +23,5 @@ spec:
         - name: VITE_Backend_API_URL
           valueFrom:
             configMapKeyRef:
-              name: all_config
+              name: all-config
               key: VITE_Backend_API_URL

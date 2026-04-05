@@ -23,13 +23,13 @@ spec:
         - name: MONGO_DATABASE
           valueFrom:
             configMapKeyRef:
-              name: all_config
+              name: all-config
               key: MONGO_DATABASE
 
         - name: MONGO_COLLECTION
           valueFrom:
             configMapKeyRef:
-              name: all_config
+              name: all-config
               key: MONGO_COLLECTION
 
 
@@ -38,7 +38,7 @@ spec:
         - name: MONGO_URI
           valueFrom:
             secretKeyRef:
-              name: all_secret
+              name: all-secret
               key: MONGO_URI
 
         # - name: PASSWORD

@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: all_config
+  name: all-config
 data:
   MONGO_DATABASE: mydatabase
   MONGO_COLLECTION: sample_collection
-  VITE_Backend_API_URL: http://localhost:8080
+  VITE_Backend_API_URL: /api

@@ -55,9 +55,9 @@ func main() {
 	}))
 
 	// Routes
-	r.POST("/tasks", createTask)
-	r.GET("/tasks", getTasks)
-	r.DELETE("/tasks/:title", deleteTask)
+	r.POST("/api/tasks", createTask)
+	r.GET("/api/tasks", getTasks)
+	r.DELETE("/api/tasks/:title", deleteTask)
 
 	r.Run(":8080")
 }
